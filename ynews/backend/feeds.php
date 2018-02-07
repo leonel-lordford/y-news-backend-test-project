@@ -105,10 +105,10 @@ desired effect
                     <!-- Sidebar Menu -->
                     <ul class="sidebar-menu" data-widget="tree">
                         <!-- Optionally, you can add icons to the links -->
-                        <li class="active">
+                        <li>
                             <a href="index.php"><i class="fa fa-link"></i> <span>Dashboard</span></a>
                         </li>
-                        <li>
+                        <li class="active">
                             <a href="feeds.php"><i class="fa fa-link"></i> <span>Feeds</span></a>
                         </li>
                         <li>
@@ -123,81 +123,93 @@ desired effect
             <div class="content-wrapper">
                 <!-- Content Header (Page header) -->
                 <section class="content-header">
-                    <h1>General status</h1>
+                    <h1>Manage Feeds</h1>
                 </section>
                 <!-- Main content -->
                 <section class="content container-fluid">
-                    <!--------------------------
-        | Your Page Content Here |
-        -------------------------->                     
-                    <div class="row">
-                        <div class="col-sm-6 col-xs-12 col-md-3"> 
-                            <div class="info-box">
-                                <span class="info-box-icon bg-aqua"><i class="fa fa-refresh"></i></span>
-                                <div class="info-box-content">
-                                    <span class="info-box-text">Last update</span>
-                                    <span class="info-box-number"><small>10:47 pm</small></span>
+                    <div class="row"> 
+                        <!-- /.col -->                         
+
+                        <div style="padding: 0px 16px;">
+                            <!-- /.box -->
+                            <div class="box">
+                                <div class="box-header">
+                                    <h3 class="box-title">List of feeds</h3>
                                 </div>
-                                <!-- /.info-box-content -->
-                            </div>                             
-                            <!-- /.info-box -->                             
-                        </div>
-                        <!-- /.col -->
-                        <div class="col-md-3 col-sm-6 col-xs-12">
-                            <div class="info-box">
-                                <span class="info-box-icon bg-red"><i class="fa fa-feed"></i></span>
-                                <div class="info-box-content">
-                                    <span class="info-box-text">Total feeds</span>
-                                    <span class="info-box-number">7</span>
-                                </div>
-                                <!-- /.info-box-content -->
-                            </div>
-                            <!-- /.info-box -->
-                        </div>
-                        <!-- /.col -->
-                        <!-- fix for small devices only -->
-                        <div class="clearfix visible-sm-block"></div>
-                        <div class="col-md-3 col-sm-6 col-xs-12">
-                            <div class="info-box">
-                                <span class="info-box-icon bg-green"><i class="fa fa-thumbs-o-up"></i></span>
-                                <div class="info-box-content">
-                                    <span class="info-box-text">Likes</span>
-                                    <span class="info-box-number">134</span>
-                                </div>
-                                <!-- /.info-box-content -->
-                            </div>
-                            <!-- /.info-box -->
-                        </div>
-                        <!-- /.col -->
-                        <div class="col-md-3 col-sm-6 col-xs-12">
-                            <div class="info-box">
-                                <span class="info-box-icon bg-yellow"><i class="fa fa-share-alt"></i></span>
-                                <div class="info-box-content">
-                                    <span class="info-box-text">Shares</span>
-                                    <span class="info-box-number">50</span>
-                                </div>
-                                <!-- /.info-box-content -->
-                            </div>
-                            <!-- /.info-box -->
-                        </div>
-                        <!-- /.col -->
-                    </div>
-                    <div class="row">
-                        <div class="text-center col-md-4 col-md-offset-4">
-                            <div class="box box-success">
-                                <div class="box-header with-border">
-                                    <h3 class="box-title">Update news</h3>
-                                </div>
+                                <!-- /.box-header -->
                                 <div class="box-body">
-                                    <div class="text-center">
-                                        <button type="button" class="btn btn-default btn-lrg" onclick="javascript:update_news()">
-                                            <i class="fa fa-refresh" id="btn_fetch"></i>&nbsp; Fetch data
-                                        </button>
+                                    <table class="table table-striped"> 
+                                        <tbody>
+                                            <tr>
+                                                <th>Name</th>
+                                                <th>Category</th>
+                                                <th>URL</th>
+                                                <th style="width: 80px">Download</th>
+                                                <th style="width: 80px">&nbsp;</th>
+                                            </tr>
+                                            <tr>
+                                                <td>Yahoo sports</td>
+                                                <td>Sports</td>
+                                                <td>
+                                                    <a href="https://news.yahoo.com/sports" target="blank">https://news.yahoo.com/sports</a>
+                                                </td>
+                                                <td class="text-center"> 
+                                                    <a href="feeds.php?action=cvs&feed=1234567890" data-toggle="tooltip" title="CSV"><i class="fa fa-lg fa-download"></i></a>
+                                                    <a href="feeds.php?action=json&feed=1234567890" data-toggle="tooltip" title="JSON"><i class="fa-fw fa-lg fa fa-arrow-circle-down"></i></a>
+                                                </td>
+                                                <td class="text-center"> 
+                                                    <a href="feeds.php?action=edit&feed=1234567890" data-toggle="tooltip" title="Edit feed"><i class="fa fa-edit fa-lg"></i></a>
+                                                    <a href="feeds.php?action=remove&feed=1234567890" data-toggle="tooltip" title="Remove feed"><i class="fa-fw fa-lg fa fa-trash-o"></i></a>
+                                                </td>
+                                            </tr>
+                                        </tbody>                                         
+                                    </table>
+                                    <form role="form">
+                                        <div class="box-body">
+                                            <div class="form-group">
+                                                <label class="control-label">Edit feed</label>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="name" class="control-label">Name:</label>
+                                                <input class="form-control" id="name" placeholder="Enter name" value="Yahoo sports">
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="control-label">Category:</label>
+                                                <select class="form-control">
+                                                    <option value="10">Sports</option>
+                                                    <option value="10">Health</option>
+                                                    <option value="10">Politics</option>
+                                                </select>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="url" class="control-label">URL:</label>
+                                                <input class="form-control" id="url" placeholder="Enter url" value="https://news.yahoo.com/sports">
+                                            </div>
+                                        </div>
+                                        <!-- /.box-body -->
+                                        <div class="box-footer">
+                                            <button type="submit" class="btn btn-primary">Submit</button>
+                                        </div>
+                                    </form>
+                                    <div class="box-body">
+                                        <div class="alert alert-danger alert-dismissible">
+                                            <h4><i class="icon fa fa-warning"></i> Alert!</h4>
+                                            Do you really want to delete feed 
+                                            <span class="label label-default">Yahoo sports</span> ?
+                                        </div>
+                                        <button type="button" class="btn btn-primary">Yes, delete feed</button>
+                                        <a href="feeds.php">
+                                            <button type="button" class="btn btn-default text-left pull-right">Cancel</button>
+                                        </a>
                                     </div>
                                 </div>
+                                <!-- /.box-body -->
                             </div>
-                        </div>
-                    </div>
+                            <!-- /.box -->
+                        </div>                         
+
+                        <!-- /.col -->                         
+                    </div>                     
                 </section>
                 <!-- /.content -->
             </div>             
@@ -228,6 +240,11 @@ desired effect
             $("#btn_fetch").toggleClass("fa-spin")
             // create AJAX request here
             }
+</script>
+        <script>
+    $(function() {
+    $('[data-toggle="tooltip"]').tooltip();
+})
 </script>
     </body>
 </html>
