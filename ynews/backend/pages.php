@@ -56,6 +56,12 @@
                         <li class="active">
                             <a href="pages.php"><i class="fa fa-link"></i> <span>Static pages</span></a>
                         </li>
+                        <li>
+                            <a href="categories.php"><i class="fa fa-link"></i> <span>Categories</span></a>
+                        </li>
+                        <li>
+                            <a href="users.php"><i class="fa fa-link"></i> <span>Users</span></a>
+                        </li>
                     </ul>
                 </section>
             </aside>             
