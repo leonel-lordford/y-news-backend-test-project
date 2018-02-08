@@ -19,7 +19,7 @@
     <body class="hold-transition skin-blue layout-boxed">
         <div class="wrapper"> 
             <header class="main-header">
-                <a href="index2.html" class="logo">
+                <a href="index.php" class="logo">
                     <span class="logo-mini"><b>Y</b>-News</span>
                     <span class="logo-lg"><b>Y</b>-news</span>
                 </a>

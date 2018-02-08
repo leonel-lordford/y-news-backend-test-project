@@ -47,7 +47,7 @@ if(isset($_POST) && empty($_POST) == false) {
     <body class="hold-transition skin-blue layout-boxed">
         <div class="wrapper"> 
             <header class="main-header">
-                <a href="index2.html" class="logo"> <span class="logo-mini"><b>Y</b>-News</span> <span class="logo-lg"><b>Y</b>-news</span> </a>
+                <a href="index.php" class="logo"> <span class="logo-mini"><b>Y</b>-News</span> <span class="logo-lg"><b>Y</b>-news</span> </a>
                 <nav class="navbar navbar-static-top" role="navigation">
                     <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button"> <span class="sr-only">Toggle navigation</span> </a>
                     <div class="navbar-custom-menu">
