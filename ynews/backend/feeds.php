@@ -25,14 +25,32 @@ if(isset($_POST) && empty($_POST) == false) {
         if($category) {
             $name = $_POST['name'];
             $source = $_POST['url'];
-            $uuid = random_int(RAND_MIN, RAND_MAX);
-            $query = "INSERT INTO ynews.feeds (`name`, `source`, `categories_id_categories`, `uuid`) VALUES ('". $name ."', '". $source ."', '". $category ."', '". $uuid ."')";
-            $feed = mysqli_query($mysql, $query);
 
-            if($feed) {
-                $success = 1;
-                $action = $_GET['action'];
+            switch ($_GET['action']) {
+                case 'add':
+                    $uuid = random_int(RAND_MIN, RAND_MAX);
+                    $query = "INSERT INTO ynews.feeds (`name`, `source`, `categories_id_categories`, `uuid`) VALUES ('". $name ."', '". $source ."', '". $category ."', '". $uuid ."')";
+                    $feed = mysqli_query($mysql, $query);
+        
+                    if($feed) {
+                        $success = 1;
+                        $action = $_GET['action'];
+                    }
+                break;
+                case 'edit':
+                    $query = "UPDATE ynews.feeds SET `name`='". $name ."', `source`='". $source ."', `categories_id_categories`='". $category ."' WHERE `uuid`='". $_GET['feed'] ."'";
+                    $feed = mysqli_query($mysql, $query);
+        
+                    if($feed) {
+                        $success = 1;
+                        $action = $_GET['action'];
+                    }
+                break;
             }
+            // $name = $_POST['name'];
+            // $source = $_POST['url'];
+            // $uuid = random_int(RAND_MIN, RAND_MAX);
+            
         }
     }
     else {
@@ -134,6 +152,9 @@ if(isset($_POST) && empty($_POST) == false) {
                                     case 'add':
                                         $msg = "Feed added.";
                                     break;
+                                    case 'edit':
+                                        $msg = "Feed updated.";
+                                    break;
                                 }
                                 echo '
                                 <div class="box-body">
@@ -185,28 +206,36 @@ if(isset($_POST) && empty($_POST) == false) {
                                         ';
                                     break;
                                     case 'edit':
+                                        $result = mysqli_query($mysql, "SELECT `name`, `source`, `categories_id_categories` as cat FROM ynews.feeds WHERE `uuid`='". $_GET['feed'] ."'");
+                                        $row = mysqli_fetch_assoc($result);
                                         echo '
                                             <div class="box-header">
                                                 <h3 class="box-title">Edit feed</h3>
                                             </div>
                                             <div class="box-body">
-                                                <form role="form">
+                                                <form role="form" method="post">
                                                     <div class="box-body">
                                                         <div class="form-group">
                                                             <label for="name" class="control-label">Name:</label>
-                                                            <input class="form-control" id="name" placeholder="Enter name" value="Yahoo sports">
+                                                            <input class="form-control" id="name" name="name" placeholder="Enter name" value="'. $row['name'] .'">
                                                         </div>
                                                         <div class="form-group">
                                                             <label class="control-label">Category:</label>
-                                                            <select class="form-control">
-                                                                <option value="10">Sports</option>
-                                                                <option value="10">Health</option>
-                                                                <option value="10">Politics</option>
-                                                            </select>
+                                                            <select class="form-control" id="category" name="category">';
+                                                            $categories = mysqli_query($mysql, "SELECT `id_categories`, `name`, `uuid` FROM ynews.categories");
+                                                            while($cat = mysqli_fetch_assoc($categories)) {
+                                                                if($cat['id_categories'] == $row['cat']) {
+                                                                    echo "<option value='". $cat['uuid'] ."' selected>". $cat['name'] ."</option>";
+                                                                }
+                                                                else {
+                                                                    echo "<option value='". $cat['uuid'] ."'>". $cat['name'] ."</option>";
+                                                                }
+                                                            }
+                                                            echo '</select>
                                                         </div>
                                                         <div class="form-group">
                                                             <label for="url" class="control-label">URL:</label>
-                                                            <input class="form-control" id="url" placeholder="Enter url" value="https://news.yahoo.com/sports">
+                                                            <input class="form-control" id="url" name="url" placeholder="Enter url" value="'. $row['source'] .'">
                                                         </div>
                                                     </div>
                                                     <!-- /.box-body -->
