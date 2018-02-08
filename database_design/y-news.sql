@@ -39,8 +39,8 @@ CREATE TABLE IF NOT EXISTS `ynews`.`feeds` (
   CONSTRAINT `fk_feeds_categories1`
     FOREIGN KEY (`categories_id_categories`)
     REFERENCES `ynews`.`categories` (`id_categories`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
 
@@ -61,8 +61,8 @@ CREATE TABLE IF NOT EXISTS `ynews`.`news` (
   CONSTRAINT `fk_news_feeds1`
     FOREIGN KEY (`feeds_id_feeds`)
     REFERENCES `ynews`.`feeds` (`id_feeds`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
 
@@ -79,8 +79,8 @@ CREATE TABLE IF NOT EXISTS `ynews`.`rating` (
   CONSTRAINT `fk_rating_news1`
     FOREIGN KEY (`news_id_news`)
     REFERENCES `ynews`.`news` (`id_news`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
 
@@ -122,8 +122,8 @@ CREATE TABLE IF NOT EXISTS `ynews`.`likes` (
   CONSTRAINT `fk_likes_news1`
     FOREIGN KEY (`news_id_news`)
     REFERENCES `ynews`.`news` (`id_news`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
 
@@ -140,8 +140,8 @@ CREATE TABLE IF NOT EXISTS `ynews`.`shares` (
   CONSTRAINT `fk_shares_news1`
     FOREIGN KEY (`news_id_news`)
     REFERENCES `ynews`.`news` (`id_news`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
 
