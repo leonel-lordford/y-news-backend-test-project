@@ -47,15 +47,6 @@ echo '
             echo '
                 <a href="feeds.php"><i class="fa fa-link"></i> <span>Feeds</span></a>
             </li>';
-            if(ACTIVE == "pages") {
-                echo '<li class="active">';
-            }
-            else {
-                echo '<li>';
-            }
-            echo '
-                <a href="pages.php"><i class="fa fa-link"></i> <span>Static pages</span></a>
-            </li>';
             if(ACTIVE == "categories") {
                 echo '<li class="active">';
             }
@@ -65,6 +56,16 @@ echo '
             echo '
                 <a href="categories.php"><i class="fa fa-link"></i> <span>Categories</span></a>
             </li>';
+            if(ACTIVE == "pages") {
+                echo '<li class="active">';
+            }
+            else {
+                echo '<li>';
+            }
+            echo '
+                <a href="pages.php"><i class="fa fa-link"></i> <span>Static pages</span></a>
+            </li>';
+            
             if(ACTIVE == "users") {
                 echo '<li class="active">';
             }

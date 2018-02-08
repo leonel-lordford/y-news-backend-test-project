@@ -247,10 +247,10 @@ if(isset($_POST) && empty($_POST) == false) {
                                                     <form role="form" method="post">
                                                         <input type="hidden" name="action" value="">
                                                         <button type="submit" class="btn btn-primary">Yes, delete feed</button>
+                                                        <a href="feeds.php">
+                                                            <button type="button" class="btn btn-default text-left pull-right">Cancel</button>
+                                                        </a>
                                                     </form>
-                                                    <a href="feeds.php">
-                                                        <button type="button" class="btn btn-default text-left pull-right">Cancel</button>
-                                                    </a>
                                                 </div>
                                             ';
                                         }

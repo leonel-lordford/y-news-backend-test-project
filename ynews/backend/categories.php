@@ -14,9 +14,9 @@ $action = 0;
 if(isset($_POST) && empty($_POST) == false) {
     if(isset($_GET['action']) && trim($_GET['action']) == "remove" && isset($_GET['category']) && trim($_GET['category'])) {
         $query = "DELETE FROM ynews.categories WHERE `uuid`='". $_GET['category']. "'";
-        $feed = mysqli_query($mysql, $query);
+        $category = mysqli_query($mysql, $query);
 
-        if($feed) {
+        if($category) {
             $success = 1;
             $action = $_GET['action'];
         }
@@ -38,9 +38,9 @@ if(isset($_POST) && empty($_POST) == false) {
                 break;
                 case 'edit':
                     $query = "UPDATE ynews.categories SET `name`='". $name ."' WHERE `uuid`='". $_GET['category'] ."'";
-                    $feed = mysqli_query($mysql, $query);
+                    $category = mysqli_query($mysql, $query);
         
-                    if($feed) {
+                    if($category) {
                         $success = 1;
                         $action = $_GET['action'];
                     }
@@ -204,10 +204,10 @@ if(isset($_POST) && empty($_POST) == false) {
                                                     <form role="form" method="post">
                                                         <input type="hidden" name="action" value="">
                                                         <button type="submit" class="btn btn-primary">Yes, delete category</button>
+                                                        <a href="categories.php">
+                                                            <button type="button" class="btn btn-default text-left pull-right">Cancel</button>
+                                                        </a>
                                                     </form>
-                                                    <a href="categories.php">
-                                                        <button type="button" class="btn btn-default text-left pull-right">Cancel</button>
-                                                    </a>
                                                 </div>
                                             ';
                                         }
