@@ -12,49 +12,56 @@ $success = 0;
 $action = 0;
 
 if(isset($_POST) && empty($_POST) == false) {
-    if(isset($_POST['name']) && trim($_POST['name']) && isset($_POST['category']) && trim($_POST['category']) && 
-        isset($_POST['url']) && trim($_POST['url'])) {
-        // get correct category
-        $category = 0;
-        $result = mysqli_query($mysql, "SELECT `id_categories` FROM ynews.categories WHERE `uuid` = '". $_POST['category'] ."'");
-        if($result->num_rows) {
-            $row = mysqli_fetch_assoc($result);
-            $category = $row['id_categories'];
-        }
+    if(isset($_GET['action']) && trim($_GET['action']) == "remove" && isset($_GET['feed']) && trim($_GET['action'])) {
+        $query = "DELETE FROM ynews.feeds WHERE `uuid`='". $_GET['feed']. "'";
+        $feed = mysqli_query($mysql, $query);
 
-        if($category) {
-            $name = $_POST['name'];
-            $source = $_POST['url'];
-
-            switch ($_GET['action']) {
-                case 'add':
-                    $uuid = random_int(RAND_MIN, RAND_MAX);
-                    $query = "INSERT INTO ynews.feeds (`name`, `source`, `categories_id_categories`, `uuid`) VALUES ('". $name ."', '". $source ."', '". $category ."', '". $uuid ."')";
-                    $feed = mysqli_query($mysql, $query);
-        
-                    if($feed) {
-                        $success = 1;
-                        $action = $_GET['action'];
-                    }
-                break;
-                case 'edit':
-                    $query = "UPDATE ynews.feeds SET `name`='". $name ."', `source`='". $source ."', `categories_id_categories`='". $category ."' WHERE `uuid`='". $_GET['feed'] ."'";
-                    $feed = mysqli_query($mysql, $query);
-        
-                    if($feed) {
-                        $success = 1;
-                        $action = $_GET['action'];
-                    }
-                break;
-            }
-            // $name = $_POST['name'];
-            // $source = $_POST['url'];
-            // $uuid = random_int(RAND_MIN, RAND_MAX);
-            
+        if($feed) {
+            $success = 1;
+            $action = $_GET['action'];
         }
     }
     else {
-        $errors = 1;
+        if(isset($_POST['name']) && trim($_POST['name']) && isset($_POST['category']) && trim($_POST['category']) && 
+            isset($_POST['url']) && trim($_POST['url'])) {
+            // get correct category
+            $category = 0;
+            $result = mysqli_query($mysql, "SELECT `id_categories` FROM ynews.categories WHERE `uuid` = '". $_POST['category'] ."'");
+            if($result->num_rows) {
+                $row = mysqli_fetch_assoc($result);
+                $category = $row['id_categories'];
+            }
+
+            if($category) {
+                $name = $_POST['name'];
+                $source = $_POST['url'];
+
+                switch ($_GET['action']) {
+                    case 'add':
+                        $uuid = random_int(RAND_MIN, RAND_MAX);
+                        $query = "INSERT INTO ynews.feeds (`name`, `source`, `categories_id_categories`, `uuid`) VALUES ('". $name ."', '". $source ."', '". $category ."', '". $uuid ."')";
+                        $feed = mysqli_query($mysql, $query);
+            
+                        if($feed) {
+                            $success = 1;
+                            $action = $_GET['action'];
+                        }
+                    break;
+                    case 'edit':
+                        $query = "UPDATE ynews.feeds SET `name`='". $name ."', `source`='". $source ."', `categories_id_categories`='". $category ."' WHERE `uuid`='". $_GET['feed'] ."'";
+                        $feed = mysqli_query($mysql, $query);
+            
+                        if($feed) {
+                            $success = 1;
+                            $action = $_GET['action'];
+                        }
+                    break;
+                }            
+            }
+        }
+        else {
+            $errors = 1;
+        }
     }
 }
 ?>
@@ -155,16 +162,36 @@ if(isset($_POST) && empty($_POST) == false) {
                                     case 'edit':
                                         $msg = "Feed updated.";
                                     break;
+                                    case 'remove':
+                                        $msg = "Feed removed.";
+                                    break;
                                 }
-                                echo '
-                                <div class="box-body">
-                                    <div class="alert alert-success alert-dismissible">
-                                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                                        <h4><i class="icon fa fa-check"></i> Success!</h4>
-                                        '. $msg . '
+                                if($msg == "Feed removed.") {
+                                    echo '
+                                        <div class="box-body">
+                                            <div class="alert alert-success alert-dismissible">
+                                                <h4><i class="icon fa fa-check"></i> Success!</h4>
+                                                '. $msg . '
+                                            </div>
+                                        </div>
+                                        <div class="box-footer">
+                                            <a href="feeds.php">
+                                                <button type="button" class="btn btn-default">Go to feeds</button>
+                                            </a>
+                                        </div>
+                                    ';
+                                }
+                                else {
+                                    echo '
+                                    <div class="box-body">
+                                        <div class="alert alert-success alert-dismissible">
+                                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                                            <h4><i class="icon fa fa-check"></i> Success!</h4>
+                                            '. $msg . '
+                                        </div>
                                     </div>
-                                </div>
-                                ';
+                                    ';
+                                }
                             }
                             if(isset($_GET["action"]) && empty($_GET["action"]) == false) {
                                 switch ($_GET["action"]) {
@@ -194,7 +221,6 @@ if(isset($_POST) && empty($_POST) == false) {
                                                             <input class="form-control" id="url" name="url" placeholder="Enter url">
                                                         </div>
                                                     </div>
-                                                    <!-- /.box-body -->
                                                     <div class="box-footer">
                                                         <button type="submit" class="btn btn-primary">Submit</button>
                                                         <a href="feeds.php">
@@ -238,7 +264,6 @@ if(isset($_POST) && empty($_POST) == false) {
                                                             <input class="form-control" id="url" name="url" placeholder="Enter url" value="'. $row['source'] .'">
                                                         </div>
                                                     </div>
-                                                    <!-- /.box-body -->
                                                     <div class="box-footer">
                                                         <button type="submit" class="btn btn-primary">Submit</button>
                                                         <a href="feeds.php">
@@ -250,22 +275,29 @@ if(isset($_POST) && empty($_POST) == false) {
                                         ';
                                     break;
                                     case 'remove':
-                                        echo '
-                                            <div class="box-header">
-                                                <h3 class="box-title">Remove feed</h3>
-                                            </div>
-                                            <div class="box-body">
-                                                <div class="alert alert-danger alert-dismissible">
-                                                    <h4><i class="icon fa fa-warning"></i> Alert!</h4>
-                                                    Do you really want to delete feed 
-                                                    <span class="label label-default">Yahoo sports</span> ?
+                                        if($success == false) {
+                                            $result = mysqli_query($mysql, "SELECT `name` FROM ynews.feeds WHERE `uuid`='". $_GET['feed'] ."'");
+                                            $row = mysqli_fetch_assoc($result);
+                                            echo '
+                                                <div class="box-header">
+                                                    <h3 class="box-title">Remove feed</h3>
                                                 </div>
-                                                <button type="button" class="btn btn-primary">Yes, delete feed</button>
-                                                <a href="feeds.php">
-                                                    <button type="button" class="btn btn-default text-left pull-right">Cancel</button>
-                                                </a>
-                                            </div>
-                                        ';
+                                                <div class="box-body">
+                                                    <div class="alert alert-danger alert-dismissible">
+                                                        <h4><i class="icon fa fa-warning"></i> Alert!</h4>
+                                                        Do you really want to delete feed 
+                                                        <span class="label label-default">'. $row['name'] .'</span> ?
+                                                    </div>
+                                                    <form role="form" method="post">
+                                                        <input type="hidden" name="action" value="">
+                                                        <button type="submit" class="btn btn-primary">Yes, delete feed</button>
+                                                    </form>
+                                                    <a href="feeds.php">
+                                                        <button type="button" class="btn btn-default text-left pull-right">Cancel</button>
+                                                    </a>
+                                                </div>
+                                            ';
+                                        }
                                     break;
                                 }
                             }
