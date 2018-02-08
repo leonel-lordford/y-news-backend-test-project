@@ -6,12 +6,28 @@ if (mysqli_connect_errno($mysql)) {
     die("Failed to connect to Database Server, please try again later.");
 }
 
+if(isset($_POST) && empty($_POST) == false) {
+    // get all feeds and update database
+    $result = mysqli_query($mysql, "SELECT `id_feeds`, `source` FROM ynews.feeds");
+    while($row = mysqli_fetch_assoc($result)) {
+        $rss = simplexml_load_file($row['source']);
+        foreach ($rss->channel->item as $item) {
+            $title = $item->title;
+            $desc = strip_tags($item->description);
+            $link = $item->link;
+            $date = date_format(new DateTime($item->pubDate), "c");
+            $feed = $row['id_feeds'];
+            $updated = date_format(new DateTime(), "c");
+            $uuid = random_int(RAND_MIN, RAND_MAX);
+            
+            $query = "INSERT INTO ynews.news (`title`, `description`, `link`, `pubdate`, `feeds_id_feeds`, `saved_at`, `uuid`) VALUES('" . $title . "', '" . $desc. "', '" . $link . "', '" . $date . "', '" . $feed . "', '" . $updated . "', '" . $uuid . "')";
+            $news = mysqli_query($mysql, $query);
+        }
+    }
+}
+
 ?>
 <!DOCTYPE html>
-<!--
-This is a starter template page. Use this page to start your new project from
-scratch. This page gets rid of all links and provides the needed markup only.
--->
 <html>
     <head>
         <meta charset="utf-8">
@@ -32,19 +48,13 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <body class="hold-transition skin-blue layout-boxed">
         <div class="wrapper"> 
             <header class="main-header">
-                <a href="index2.html" class="logo">
-                    <span class="logo-mini"><b>Y</b>-News</span>
-                    <span class="logo-lg"><b>Y</b>-news</span>
-                </a>
+                <a href="index2.html" class="logo"> <span class="logo-mini"><b>Y</b>-News</span> <span class="logo-lg"><b>Y</b>-news</span> </a>
                 <nav class="navbar navbar-static-top" role="navigation">
                     <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button"> <span class="sr-only">Toggle navigation</span> </a>
                     <div class="navbar-custom-menu">
                         <ul class="nav navbar-nav">
                             <li class="dropdown user user-menu"> 
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                                    <i class="fa fa-user fa-lg"></i>
-                                    <span class="hidden-xs">Alexander Pierce</span>
-                                </a>                                 
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown"> <i class="fa fa-user fa-lg"></i> <span class="hidden-xs">Alexander Pierce</span> </a> 
                                 <ul class="dropdown-menu">
                                     <li class="user-footer">
                                         <div class="pull-right">
@@ -84,40 +94,76 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 </section>
                 <section class="content container-fluid">
                     <div class="row">
-                        <div class="col-sm-6 col-xs-12 col-md-3"> 
+                        <div class="col-xs-12 col-sm-12 col-md-4"> 
                             <div class="info-box">
                                 <span class="info-box-icon bg-aqua"><i class="fa fa-refresh"></i></span>
                                 <div class="info-box-content">
                                     <span class="info-box-text">Last update</span>
-                                    <span class="info-box-number"><small>10:47 pm</small></span>
+                                    <?php
+                                    // get last news' saved datetime
+                                    $result = mysqli_query($mysql, "SELECT `saved_at` FROM ynews.news ORDER BY  `id_news` DESC LIMIT 1");
+                                    $row = mysqli_fetch_assoc($result);
+                                    if(isset($row)) {
+                                        $d = date_create($row['saved_at']);
+                                        $date = date_format($d, "Y-m-d");
+                                        $time = date_format($d, "G:i a");
+                                        echo '
+                                            <span class="info-box-number"><small>'. $date .'</small></span>
+                                            <span class="info-box-number"><small>'. $time .'</small></span>
+                                        ';
+                                    }
+                                    else {
+                                        echo '
+                                            <span class="info-box-number"><small>There are no news available</small></span>
+                                        ';
+                                    }
+                                    ?>
                                 </div>
                             </div>                             
                         </div>
-                        <div class="col-md-3 col-sm-6 col-xs-12">
+                        <div class="col-xs-12 col-sm-12 col-md-4">
                             <div class="info-box">
                                 <span class="info-box-icon bg-red"><i class="fa fa-feed"></i></span>
                                 <div class="info-box-content">
                                     <span class="info-box-text">Total feeds</span>
-                                    <span class="info-box-number">7</span>
+                                    <?php
+                                    // get count(feeds)
+                                    $result = mysqli_query($mysql, "SELECT COUNT(*) AS 'total_feeds' FROM ynews.feeds");
+                                    $row = mysqli_fetch_assoc($result);
+                                    if(isset($row)) {
+                                        echo '
+                                            <span class="info-box-number">'. $row['total_feeds'] .'</span>
+                                        ';
+                                    }
+                                    else {
+                                        echo '
+                                        <span class="info-box-number">0</span>
+                                        ';
+                                    }
+                                    ?>
                                 </div>
                             </div>
                         </div>
-                        <div class="clearfix visible-sm-block"></div>
-                        <div class="col-md-3 col-sm-6 col-xs-12">
+                        <div class="col-xs-12 col-sm-12 col-md-4">
                             <div class="info-box">
-                                <span class="info-box-icon bg-green"><i class="fa fa-thumbs-o-up"></i></span>
+                                <span class="info-box-icon bg-green"><i class="fa fa-file-text-o"></i></span>
                                 <div class="info-box-content">
-                                    <span class="info-box-text">Likes</span>
-                                    <span class="info-box-number">134</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-3 col-sm-6 col-xs-12">
-                            <div class="info-box">
-                                <span class="info-box-icon bg-yellow"><i class="fa fa-share-alt"></i></span>
-                                <div class="info-box-content">
-                                    <span class="info-box-text">Shares</span>
-                                    <span class="info-box-number">50</span>
+                                    <span class="info-box-text">News</span>
+                                    <?php
+                                    // get count(news)
+                                    $result = mysqli_query($mysql, "SELECT COUNT(*) AS 'total_news' FROM ynews.news");
+                                    $row = mysqli_fetch_assoc($result);
+                                    if(isset($row)) {
+                                        echo '
+                                            <span class="info-box-number">'. $row['total_news'] .'</span>
+                                        ';
+                                    }
+                                    else {
+                                        echo '
+                                        <span class="info-box-number">0</span>
+                                        ';
+                                    }
+                                    ?>
                                 </div>
                             </div>
                         </div>
@@ -130,9 +176,12 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                 </div>
                                 <div class="box-body">
                                     <div class="text-center">
-                                        <button type="button" class="btn btn-default btn-lrg" onclick="javascript:update_news()">
-                                            <i class="fa fa-refresh" id="btn_fetch"></i>&nbsp; Fetch data
-                                        </button>
+                                        <form method="POST">
+                                            <input type="hidden" name="update" />
+                                            <button type="submit" class="btn btn-default btn-lrg" onclick="javascript:update_news()">
+                                                <i class="fa fa-refresh" id="btn_fetch"></i>&nbsp; Fetch data
+                                            </button>
+                                        </form>
                                     </div>
                                 </div>
                             </div>
@@ -143,7 +192,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
             <footer class="main-footer">
                 <div class="pull-right hidden-xs">
                     Your news always up-to-date
-                </div>
+</div>
                 <strong>Copyright &copy; 2018 Y-news.</strong> All rights reserved.
             </footer>
         </div>
@@ -152,8 +201,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
         <script src="dist/js/adminlte.min.js"></script>
         <script>
             function update_news() {
-            $("#btn_fetch").toggleClass("fa-spin")
-            // create AJAX request here
+                $("#btn_fetch").toggleClass("fa-spin");
             }
         </script>
     </body>
