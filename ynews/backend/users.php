@@ -85,7 +85,7 @@ if(isset($_POST) && empty($_POST) == false) {
 
             <div class="content-wrapper">
                 <section class="content-header">
-                    <h1>Manage Users</h1><small>Very simple and unsecure demo</small>
+                    <h1>Manage Users</h1><small>Very simple and insecure demo</small>
                 </section>
                 <section class="content container-fluid">
                     <div class="row"> 
