@@ -12,36 +12,36 @@ $success = 0;
 $action = 0;
 
 if(isset($_POST) && empty($_POST) == false) {
-    if(isset($_GET['action']) && trim($_GET['action']) == "remove" && isset($_GET['page']) && trim($_GET['page'])) {
-        $query = "DELETE FROM ynews.static_pages WHERE `uuid`='". $_GET['page']. "'";
-        $page = mysqli_query($mysql, $query);
+    if(isset($_GET['action']) && trim($_GET['action']) == "remove" && isset($_GET['user']) && trim($_GET['user'])) {
+        $query = "DELETE FROM ynews.users WHERE `uuid`='". $_GET['user']. "'";
+        $category = mysqli_query($mysql, $query);
 
-        if($page) {
+        if($category) {
             $success = 1;
             $action = $_GET['action'];
         }
     }
     else {
-        if(isset($_POST['title']) && trim($_POST['title']) && isset($_POST['content']) && trim($_POST['content'])) {
-            $title = $_POST['title'];
-            $content = strip_tags($_POST['content']);
+        if(isset($_POST['username']) && trim($_POST['username']) && isset($_POST['password']) && trim($_POST['password'])) {
+            $username = $_POST['username'];
+            $password = $_POST['password'];
 
             switch ($_GET['action']) {
                 case 'add':
                     $uuid = random_int(RAND_MIN, RAND_MAX);
-                    $query = "INSERT INTO ynews.static_pages (`title`, `content`, `uuid`) VALUES ('". $title ."', '". $content ."', '". $uuid ."')";
-                    $page = mysqli_query($mysql, $query);
+                    $query = "INSERT INTO ynews.users (`username`, `password`, `uuid`) VALUES ('". $username ."', '". $password ."', '". $uuid ."')";
+                    $user = mysqli_query($mysql, $query);
         
-                    if($page) {
+                    if($user) {
                         $success = 1;
                         $action = $_GET['action'];
                     }
                 break;
                 case 'edit':
-                    $query = "UPDATE ynews.static_pages SET `title`='". $title ."', `content`='". $content ."' WHERE `uuid`='". $_GET['page'] ."'";
-                    $page = mysqli_query($mysql, $query);
+                    $query = "UPDATE ynews.users SET `username`='". $username ."', `password`='". $password ."' WHERE `uuid`='". $_GET['user'] ."'";
+                    $category = mysqli_query($mysql, $query);
         
-                    if($page) {
+                    if($category) {
                         $success = 1;
                         $action = $_GET['action'];
                     }
@@ -75,11 +75,11 @@ if(isset($_POST) && empty($_POST) == false) {
     <body class="hold-transition skin-blue layout-boxed">
         <div class="wrapper"> 
 
-            <?php define('ACTIVE', 'pages'); include 'header.php'; ?>
+            <?php define('ACTIVE', 'users'); include 'header.php'; ?>
 
             <div class="content-wrapper">
                 <section class="content-header">
-                    <h1>Manage Pages</h1>
+                    <h1>Manage Users</h1><small>Very simple and unsecure demo</small>
                 </section>
                 <section class="content container-fluid">
                     <div class="row"> 
@@ -102,16 +102,16 @@ if(isset($_POST) && empty($_POST) == false) {
                                 $msg = "";
                                 switch ($action) {
                                     case 'add':
-                                        $msg = "Page added.";
+                                        $msg = "User added.";
                                     break;
                                     case 'edit':
-                                        $msg = "Page updated.";
+                                        $msg = "User updated.";
                                     break;
                                     case 'remove':
-                                        $msg = "Page removed.";
+                                        $msg = "User removed.";
                                     break;
                                 }
-                                if($msg == "Page removed.") {
+                                if($msg == "User removed.") {
                                     echo '
                                         <div class="box-body">
                                             <div class="alert alert-success alert-dismissible">
@@ -120,8 +120,8 @@ if(isset($_POST) && empty($_POST) == false) {
                                             </div>
                                         </div>
                                         <div class="box-footer">
-                                            <a href="pages.php">
-                                                <button type="button" class="btn btn-default">Go to pages</button>
+                                            <a href="categories.php">
+                                                <button type="button" class="btn btn-default">Go to categories</button>
                                             </a>
                                         </div>
                                     ';
@@ -143,23 +143,23 @@ if(isset($_POST) && empty($_POST) == false) {
                                     case 'add':
                                         echo '
                                             <div class="box-header">
-                                                <h3 class="box-title">Add page</h3>
+                                                <h3 class="box-title">Add user</h3>
                                             </div>
                                             <div class="box-body">
                                                 <form role="form" method="post">
                                                     <div class="box-body">
                                                         <div class="form-group">
-                                                            <label for="title" class="control-label">Title:</label>
-                                                            <input class="form-control" id="name" name="title" placeholder="Enter title">
+                                                            <label for="username" class="control-label">Username:</label>
+                                                            <input class="form-control" id="username" name="username" placeholder="Enter username">
                                                         </div>
                                                         <div class="form-group">
-                                                            <label for="content" class="control-label">Content:</label>
-                                                            <textarea class="form-control" id="content" name="content" rows=5 placeholder="Enter content"></textarea>
+                                                            <label for="password" class="control-label">Password:</label>
+                                                            <input class="form-control" id="password" name="password" placeholder="Enter password">
                                                         </div>
                                                     </div>
                                                     <div class="box-footer">
                                                         <button type="submit" class="btn btn-primary">Submit</button>
-                                                        <a href="pages.php">
+                                                        <a href="categories.php">
                                                             <button type="button" class="btn btn-default text-left pull-right">Cancel</button>
                                                         </a>
                                                     </div>
@@ -168,27 +168,27 @@ if(isset($_POST) && empty($_POST) == false) {
                                         ';
                                     break;
                                     case 'edit':
-                                        $result = mysqli_query($mysql, "SELECT `title`, `content` FROM ynews.static_pages WHERE `uuid`='". $_GET['page'] ."'");
+                                        $result = mysqli_query($mysql, "SELECT `username` FROM ynews.users WHERE `uuid`='". $_GET['user'] ."'");
                                         $row = mysqli_fetch_assoc($result);
                                         echo '
                                             <div class="box-header">
-                                                <h3 class="box-title">Edit page</h3>
+                                                <h3 class="box-title">Edit user</h3>
                                             </div>
                                             <div class="box-body">
                                                 <form role="form" method="post">
                                                     <div class="box-body">
                                                         <div class="form-group">
-                                                            <label for="title" class="control-label">Title:</label>
-                                                            <input class="form-control" id="name" name="title" placeholder="Enter title" value="'. $row['title'] .'">
+                                                            <label for="username" class="control-label">Username:</label>
+                                                            <input class="form-control" id="username" name="username" placeholder="Enter username" value="'. $row['username'] .'">
                                                         </div>
                                                         <div class="form-group">
-                                                            <label for="content" class="control-label">Content:</label>
-                                                            <textarea class="form-control" id="content" name="content" rows=5 placeholder="Enter content">'. $row['content'] .'</textarea>
+                                                            <label for="password" class="control-label">Password:</label>
+                                                            <input class="form-control" id="password" name="password" placeholder="Enter password">
                                                         </div>
                                                     </div>
                                                     <div class="box-footer">
                                                         <button type="submit" class="btn btn-primary">Submit</button>
-                                                        <a href="pages.php">
+                                                        <a href="users.php">
                                                             <button type="button" class="btn btn-default text-left pull-right">Cancel</button>
                                                         </a>
                                                     </div>
@@ -198,22 +198,22 @@ if(isset($_POST) && empty($_POST) == false) {
                                     break;
                                     case 'remove':
                                         if($success == false) {
-                                            $result = mysqli_query($mysql, "SELECT `title` FROM ynews.static_pages WHERE `uuid`='". $_GET['page'] ."'");
+                                            $result = mysqli_query($mysql, "SELECT `username` FROM ynews.users WHERE `uuid`='". $_GET['user'] ."'");
                                             $row = mysqli_fetch_assoc($result);
                                             echo '
                                                 <div class="box-header">
-                                                    <h3 class="box-title">Remove page</h3>
+                                                    <h3 class="box-title">Remove user</h3>
                                                 </div>
                                                 <div class="box-body">
                                                     <div class="alert alert-danger alert-dismissible">
                                                         <h4><i class="icon fa fa-warning"></i> Alert!</h4>
-                                                        Do you really want to delete page 
-                                                        <span class="label label-default">'. $row['title'] .'</span> ?
+                                                        Do you really want to delete user 
+                                                        <span class="label label-default">'. $row['username'] .'</span> ?
                                                     </div>
                                                     <form role="form" method="post">
                                                         <input type="hidden" name="action" value="">
-                                                        <button type="submit" class="btn btn-primary">Yes, delete page</button>
-                                                        <a href="pages.php">
+                                                        <button type="submit" class="btn btn-primary">Yes, delete user</button>
+                                                        <a href="users.php">
                                                             <button type="button" class="btn btn-default text-left pull-right">Cancel</button>
                                                         </a>
                                                     </form>
@@ -225,43 +225,36 @@ if(isset($_POST) && empty($_POST) == false) {
                             }
                             else {
                                 echo '
-                                    <div class="box-header">
-                                        <h3 class="box-title">List of pages</h3>
-                                    </div>
-                                    <div class="box-body">
-                                        <a href="pages.php?action=add">
-                                            <button type="button" class="btn btn-primary">Add page</button>
-                                        </a>
-                                        <hr/>
-                                        <div id="accordion">
-                                        ';
-                                        $result = mysqli_query($mysql, "SELECT `title`, `content`, `uuid` FROM ynews.static_pages");
-                                        while($row = mysqli_fetch_assoc($result)) {
-                                            echo '
-                                                <div>
-                                                    <div class="box-header">
-                                                        <h4 class="box-title"> 
-                                                            <a data-toggle="collapse" data-parent="#accordion" href="#'. $row['uuid'] .'" aria-expanded="false" class="collapsed">
-                                                            '. $row['title'] .'
-                                                            </a>
-                                                        </h4>
-                                                        <div class="pull-right">
-                                                            <a href="pages.php?action=edit&page='. $row['uuid'] .'" data-toggle="tooltip" title="Edit page"><i class="fa fa-edit fa-lg"></i></a>
-                                                            <a href="pages.php?action=remove&page='. $row['uuid'] .'" data-toggle="tooltip" title="Remove page"><i class="fa-fw fa-lg fa fa-trash-o"></i></a>
-                                                        </div>
-                                                    </div>
-                                                    <div id="'. $row['uuid'] .'" class="panel-collapse collapse" aria-expanded="false">
-                                                        <div class="box-body">
-                                                            '. $row['content'] .'
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            ';
-                                        }
-
-                                echo '
-                                    </div>
-                                ';
+                                <div class="box-header">
+                                    <h3 class="box-title">List of users</h3>
+                                </div>
+                                <div class="box-body">
+                                    <a href="users.php?action=add">
+                                        <button type="button" class="btn btn-primary">Add user</button>
+                                    </a>
+                                    <hr/>
+                                    <table class="table table-striped"> 
+                                        <tbody>
+                                            <tr>
+                                                <th>Username</th>
+                                                <th style="width: 80px">&nbsp;</th>
+                                            </tr>';
+                                            $result = mysqli_query($mysql, "SELECT `username`, `uuid` FROM ynews.users");
+                                            while($row = mysqli_fetch_assoc($result)) {
+                                                echo '
+                                                    <tr>
+                                                        <td>'. $row['username'] .'</td>
+                                                        <td class="text-center"> 
+                                                            <a href="users.php?action=edit&user='. $row['uuid'] .'" data-toggle="tooltip" title="Edit user"><i class="fa fa-edit fa-lg"></i></a>
+                                                            <a href="users.php?action=remove&user='. $row['uuid'] .'" data-toggle="tooltip" title="Remove user"><i class="fa-fw fa-lg fa fa-trash-o"></i></a>
+                                                        </td>
+                                                    </tr>
+                                                ';
+                                            }
+                                            echo '</tbody>                                         
+                                    </table>
+                                </div>
+                            ';
                             }
                             ?>
                             </div>
