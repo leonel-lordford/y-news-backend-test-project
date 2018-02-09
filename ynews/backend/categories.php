@@ -1,4 +1,10 @@
 <?php
+session_start();
+
+if(isset($_SESSION['valid_user']) == false) {
+    header('location: login.php');
+}
+
 include 'database.php';
 
 $mysql = database_open();

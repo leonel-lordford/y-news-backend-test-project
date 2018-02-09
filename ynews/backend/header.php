@@ -12,12 +12,12 @@ echo '
                 <li class="dropdown user user-menu"> 
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                         <i class="fa fa-user fa-lg"></i>
-                        <span class="hidden-xs">Alexander Pierce</span>
+                        <span class="hidden-xs">Welcome, '. $_SESSION['username'] .'</span>
                     </a>                                 
                     <ul class="dropdown-menu">
                         <li class="user-footer">
                             <div class="pull-right">
-                                <a href="logout.php" class="btn btn-default btn-flat">Logout</a>
+                                <a href="login.php" class="btn btn-default btn-flat">Logout</a>
                             </div>
                         </li>
                     </ul>
