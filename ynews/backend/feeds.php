@@ -10,9 +10,70 @@ if (mysqli_connect_errno($mysql)) {
 $errors = 0;
 $success = 0;
 $action = 0;
+$no_data = 0;
+
+if(isset($_GET['action']) && trim($_GET['action']) == "csv" && isset($_GET['feed']) && trim($_GET['feed'])) {
+    // get current feed
+    $result = mysqli_query($mysql, "SELECT `id_feeds` FROM `feeds` WHERE `uuid` = '". $_GET['feed'] . "'");
+    $row = mysqli_fetch_assoc($result);
+    if(empty($row) == false) {
+        $feed = $row['id_feeds'];        
+        $csv = "";
+        $result = mysqli_query($mysql, "SELECT `news`.`title`, `news`.`description`, `news`.`link`, `news`.`pubdate`, `categories`.`name` as `category` FROM `news` JOIN `feeds` ON `news`.`feeds_id_feeds` = `feeds`.`id_feeds` JOIN `categories` ON `feeds`.`categories_id_categories` = `categories`.`id_categories` WHERE `feeds`. `id_feeds` = '". $feed ."'");
+        while($row = mysqli_fetch_assoc($result)) {
+            $csv .= strip_tags($row['title']) . '*#*' . strip_tags($row['description']) . '*#*' . $row['link'] . '*#*' . $row['pubdate'] . '*#*' . $row['category'] . PHP_EOL;
+        }
+    
+        if(empty($csv) == false) {
+            $csv = "Title*#*Description*#*Source*#*Publication Date*#*Category" . PHP_EOL . $csv;
+            header('Content-Type: application/csv');
+            header('Content-Disposition: attachement; filename="feeds.csv"');
+            echo $csv; exit();
+        }
+        else {
+            $no_data = 1;
+            $action = $_GET['action'];
+        }
+    }
+    else {
+        $no_data = 1;
+        $action = $_GET['action'];
+    }
+}
+
+if(isset($_GET['action']) && trim($_GET['action']) == "json" && isset($_GET['feed']) && trim($_GET['feed'])) {
+    // get current feed
+    $result = mysqli_query($mysql, "SELECT `id_feeds` FROM `feeds` WHERE `uuid` = '". $_GET['feed'] . "'");
+    $row = mysqli_fetch_assoc($result);
+    if(empty($row) == false) {
+        $feed = $row['id_feeds'];        
+        $json = array();
+        $result = mysqli_query($mysql, "SELECT `news`.`title`, `news`.`description`, `news`.`link`, `news`.`pubdate`, `categories`.`name` as `category` FROM `news` JOIN `feeds` ON `news`.`feeds_id_feeds` = `feeds`.`id_feeds` JOIN `categories` ON `feeds`.`categories_id_categories` = `categories`.`id_categories` WHERE `feeds`. `id_feeds` = '". $feed ."'");
+        while($row = mysqli_fetch_assoc($result)) {
+            array_push($json, $row);
+        }
+
+        // var_dump($json);
+        $json = json_encode($json, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK);
+    
+        if(count($json)) {
+            header('Content-Type: application/json');
+            header('Content-Disposition: attachement; filename="feeds.json"');
+            echo $json; exit();
+        }
+        else {
+            $no_data = 1;
+            $action = $_GET['action'];
+        }
+    }
+    else {
+        $no_data = 1;
+        $action = $_GET['action'];
+    }
+}
 
 if(isset($_POST) && empty($_POST) == false) {
-    if(isset($_GET['action']) && trim($_GET['action']) == "remove" && isset($_GET['feed']) && trim($_GET['action'])) {
+    if(isset($_GET['action']) && trim($_GET['action']) == "remove" && isset($_GET['feed']) && trim($_GET['feed'])) {
         $query = "DELETE FROM ynews.feeds WHERE `uuid`='". $_GET['feed']. "'";
         $feed = mysqli_query($mysql, $query);
 
@@ -98,6 +159,21 @@ if(isset($_POST) && empty($_POST) == false) {
                         <div style="padding: 0px 16px;">
                             <div class="box">
                             <?php
+                            if($no_data) {
+                                echo '
+                                <div class="box-body">
+                                    <div class="alert alert-danger alert-dismissible">
+                                        <h4><i class="icon fa fa-ban"></i> Error!</h4>
+                                        No data for download.
+                                    </div>
+                                </div>
+                                <div class="box-footer">
+                                    <a href="feeds.php">
+                                        <button type="button" class="btn btn-default">Go to feeds</button>
+                                    </a>
+                                </div>
+                                ';
+                            }
                             if($errors) {
                                 echo '
                                 <div class="box-body">
@@ -286,7 +362,7 @@ if(isset($_POST) && empty($_POST) == false) {
                                                             <a href="'. $row['source'] .'" target="blank">'. $row['source'] .'</a>
                                                         </td>
                                                         <td class="text-center"> 
-                                                            <a href="feeds.php?action=cvs&feed='. $row['uuid'] .'" data-toggle="tooltip" title="CSV"><i class="fa fa-lg fa-download"></i></a>
+                                                            <a href="feeds.php?action=csv&feed='. $row['uuid'] .'" data-toggle="tooltip" title="CSV, use *#* as separator"><i class="fa fa-lg fa-download"></i></a>
                                                             <a href="feeds.php?action=json&feed='. $row['uuid'] .'" data-toggle="tooltip" title="JSON"><i class="fa-fw fa-lg fa fa-arrow-circle-down"></i></a>
                                                         </td>
                                                         <td class="text-center"> 
