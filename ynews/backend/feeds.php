@@ -18,58 +18,50 @@ $success = 0;
 $action = 0;
 $no_data = 0;
 
-if(isset($_GET['action']) && trim($_GET['action']) == "csv" && isset($_GET['feed']) && trim($_GET['feed'])) {
+if(isset($_GET['action']) && (trim($_GET['action']) == "csv" || trim($_GET['action']) == "json") && isset($_GET['feed']) && trim($_GET['feed'])) {
+    $action = $_GET['action'];
     // get current feed
     $result = mysqli_query($mysql, "SELECT `id_feeds` FROM `feeds` WHERE `uuid` = '". $_GET['feed'] . "'");
     $row = mysqli_fetch_assoc($result);
     if(empty($row) == false) {
-        $feed = $row['id_feeds'];        
+        $feed = $row['id_feeds'];
+              
         $csv = "";
-        $result = mysqli_query($mysql, "SELECT `news`.`title`, `news`.`description`, `news`.`link`, `news`.`pubdate`, `categories`.`name` as `category` FROM `news` JOIN `feeds` ON `news`.`feeds_id_feeds` = `feeds`.`id_feeds` JOIN `categories` ON `feeds`.`categories_id_categories` = `categories`.`id_categories` WHERE `feeds`. `id_feeds` = '". $feed ."'");
-        while($row = mysqli_fetch_assoc($result)) {
-            $csv .= strip_tags($row['title']) . '*#*' . strip_tags($row['description']) . '*#*' . $row['link'] . '*#*' . $row['pubdate'] . '*#*' . $row['category'] . PHP_EOL;
-        }
-    
-        if(empty($csv) == false) {
-            $csv = "Title*#*Description*#*Source*#*Publication Date*#*Category" . PHP_EOL . $csv;
-            header('Content-Type: application/csv');
-            header('Content-Disposition: attachement; filename="feeds.csv"');
-            echo $csv; exit();
-        }
-        else {
-            $no_data = 1;
-            $action = $_GET['action'];
-        }
-    }
-    else {
-        $no_data = 1;
-        $action = $_GET['action'];
-    }
-}
-
-if(isset($_GET['action']) && trim($_GET['action']) == "json" && isset($_GET['feed']) && trim($_GET['feed'])) {
-    // get current feed
-    $result = mysqli_query($mysql, "SELECT `id_feeds` FROM `feeds` WHERE `uuid` = '". $_GET['feed'] . "'");
-    $row = mysqli_fetch_assoc($result);
-    if(empty($row) == false) {
-        $feed = $row['id_feeds'];        
         $json = array();
+
         $result = mysqli_query($mysql, "SELECT `news`.`title`, `news`.`description`, `news`.`link`, `news`.`pubdate`, `categories`.`name` as `category` FROM `news` JOIN `feeds` ON `news`.`feeds_id_feeds` = `feeds`.`id_feeds` JOIN `categories` ON `feeds`.`categories_id_categories` = `categories`.`id_categories` WHERE `feeds`. `id_feeds` = '". $feed ."'");
         while($row = mysqli_fetch_assoc($result)) {
-            array_push($json, $row);
+            if($action == "csv") {
+                $csv .= strip_tags($row['title']) . '*#*' . strip_tags($row['description']) . '*#*' . $row['link'] . '*#*' . $row['pubdate'] . '*#*' . $row['category'] . PHP_EOL;
+            }
+            elseif($action == "json") {
+                array_push($json, $row);
+            }
         }
-
-        // var_dump($json);
-        $json = json_encode($json, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK);
     
-        if(count($json)) {
-            header('Content-Type: application/json');
-            header('Content-Disposition: attachement; filename="feeds.json"');
-            echo $json; exit();
+        if($action == "csv") {
+            if(empty($csv) == false) {
+                $csv = "Title*#*Description*#*Source*#*Publication Date*#*Category" . PHP_EOL . $csv;
+                header('Content-Type: application/csv');
+                header('Content-Disposition: attachement; filename="feeds.csv"');
+                echo $csv; exit();
+            }
+            else {
+                $no_data = 1;
+                $action = $_GET['action'];
+            }
         }
-        else {
-            $no_data = 1;
-            $action = $_GET['action'];
+        elseif($action == "json") {
+            $json = json_encode($json, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK);
+            if(strlen($json) > 2) {   // if no data $json is an empty array, so json_enconde returns []
+                header('Content-Type: application/json');
+                header('Content-Disposition: attachement; filename="feeds.json"');
+                echo $json; exit();
+            }
+            else {
+                $no_data = 1;
+                $action = $_GET['action'];
+            }
         }
     }
     else {
