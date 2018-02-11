@@ -12,22 +12,32 @@ if (mysqli_connect_errno($mysql)) {
     die("Failed to connect to Database Server, please try again later.");
 }
 
+$wrong_feeds = array();
+
 if(isset($_POST) && empty($_POST) == false) {
     // get all feeds and update database
-    $result = mysqli_query($mysql, "SELECT `id_feeds`, `source` FROM ynews.feeds");
+    $result = mysqli_query($mysql, "SELECT `id_feeds`, `name`, `source` FROM ynews.feeds");
     while($row = mysqli_fetch_assoc($result)) {
-        $rss = simplexml_load_file($row['source']);
-        foreach ($rss->channel->item as $item) {
-            $title = $item->title;
-            $desc = strip_tags($item->description);
-            $link = $item->link;
-            $date = date_format(new DateTime($item->pubDate), "c");
-            $feed = $row['id_feeds'];
-            $updated = date_format(new DateTime(), "c");
-            $uuid = random_int(RAND_MIN, RAND_MAX);
-            
-            $query = "INSERT INTO ynews.news (`title`, `description`, `link`, `pubdate`, `feeds_id_feeds`, `saved_at`, `uuid`) VALUES('" . $title . "', '" . $desc. "', '" . $link . "', '" . $date . "', '" . $feed . "', '" . $updated . "', '" . $uuid . "')";
-            $news = mysqli_query($mysql, $query);
+        $rss = @simplexml_load_file($row['source']);
+        if($rss) {
+            foreach ($rss->channel->item as $item) {
+                $title = $item->title;
+                $desc = strip_tags($item->description);
+                $link = $item->link;
+                $date = date_format(new DateTime($item->pubDate), "c");
+                $feed = $row['id_feeds'];
+                $updated = date_format(new DateTime(), "c");
+                $uuid = random_int(RAND_MIN, RAND_MAX);
+                
+                $query = "INSERT INTO ynews.news (`title`, `description`, `link`, `pubdate`, `feeds_id_feeds`, `saved_at`, `uuid`) VALUES('" . $title . "', '" . $desc. "', '" . $link . "', '" . $date . "', '" . $feed . "', '" . $updated . "', '" . $uuid . "')";
+                $news = mysqli_query($mysql, $query);
+            }
+        }
+        else {
+            array_push($wrong_feeds, array(
+                'name' => $row['name'],
+                'url' => $row['source']
+            ));
         }
     }
 }
@@ -154,6 +164,22 @@ if(isset($_POST) && empty($_POST) == false) {
                             </div>
                         </div>
                     </div>
+                    <?php
+                    if(count($wrong_feeds)) {
+                        echo '
+                        <div class="box-body">
+                            <div class="alert alert-danger alert-dismissible">
+                                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                                <h4><i class="icon fa fa-ban"></i> Error!</h4>
+                                '; 
+                                foreach($wrong_feeds as $feed) {
+                                    echo 'There is an error reading <b>'. $feed['name'] . '</b>, impossible to fetch url <b>' . $feed['url'] . '</b></br>';
+                                }
+                        echo '</div>
+                        </div>
+                        ';
+                    }
+                    ?>
                 </section>
             </div>             
             <footer class="main-footer">
